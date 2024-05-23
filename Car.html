@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polynomial Function Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Polynomial Function Analyzer</h1>
+<form id="functionForm">
+    <label for="function">Enter Polynomial Function (e.g., x^3 - 2*x^2 + x):</label><br>
+    <input type="text" id="function" name="function" required><br><br>
+
+    <label for="start">Start of Interval:</label><br>
+    <input type="number" id="start" name="start" required><br><br>
+
+    <label for="end">End of Interval:</label><br>
+    <input type="number" id="end" name="end" required><br><br>
+
+    <label for="increment">Increment:</label><br>
+    <input type="number" id="increment" name="increment" step="0.1" required><br><br>
+
+    <button type="submit">Calculate</button>
+</form>
+
+<h2>Sign Table</h2>
+<table id="signTable">
+    <thead>
+        <tr>
+            <th>Values of x</th>
+            <th>Sign of f(x)</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Variation Table</h2>
+<table id="variationTable">
+    <thead>
+        <tr>
+            <th>Values of x</th>
+            <th>Variation of f</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    document.getElementById('functionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const funcStr = document.getElementById('function').value;
+        const start = parseFloat(document.getElementById('start').value);
+        const end = parseFloat(document.getElementById('end').value);
+        const increment = parseFloat(document.getElementById('increment').value);
+
+        const signTableBody = document.getElementById('signTable').getElementsByTagName('tbody')[0];
+        const variationTableBody = document.getElementById('variationTable').getElementsByTagName('tbody')[0];
+
+        signTableBody.innerHTML = '';
+        variationTableBody.innerHTML = '';
+
+        let previousValue = null;
+
+        for (let x = start; x <= end; x += increment) {
+            const value = evalPolynomial(x, funcStr);
+
+            // Sign Table
+            const signRow = document.createElement('tr');
+            signRow.innerHTML = `<td>${x.toFixed(2)}</td><td>${value === 0 ? '0' : (value > 0 ? '+' : '-')}</td>`;
+            signTableBody.appendChild(signRow);
+
+            // Variation Table
+            if (previousValue !== null) {
+                const variationRow = document.createElement('tr');
+                let variation = value > previousValue ? 'Increasing' : (value < previousValue ? 'Decreasing' : 'Constant');
+                variationRow.innerHTML = `<td>${x.toFixed(2)}</td><td>${variation}</td>`;
+                variationTableBody.appendChild(variationRow);
+            }
+
+            previousValue = value;
+        }
+    });
+
+    function evalPolynomial(x, funcStr) {
+        const func = new Function('x', `return ${funcStr};`);
+        return func(x);
+    }
+</script>
+
+</body>
+</html>
